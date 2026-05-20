@@ -1,0 +1,42 @@
+# Requires: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/aws/deploy.yaml
+# On EKS this automatically provisions an AWS ALB/NLB
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shopease-ingress
+  namespace: shopease
+  annotations:
+    kubernetes.io/ingress.class:              "nginx"
+    nginx.ingress.kubernetes.io/use-regex:    "true"
+    # SSL termination — cert-manager issues TLS cert automatically
+    cert-manager.io/cluster-issuer:           "letsencrypt-prod"
+    # Rate limiting
+    nginx.ingress.kubernetes.io/limit-rps:    "30"
+    # Proxy timeouts for long-running requests
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+spec:
+  tls:
+    - hosts:
+        - your-domain.com
+      secretName: shopease-tls
+  rules:
+    - host: your-domain.com
+      http:
+        paths:
+          # Route /api/* → backend service
+          - path: /api/(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: shopease-backend
+                port:
+                  number: 8080
+          # Route everything else → frontend (React SPA)
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: shopease-frontend
+                port:
+                  number: 80

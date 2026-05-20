@@ -1,0 +1,14 @@
+# Use this for local/dev K8s only.
+# In production on AWS EKS, use RDS instead.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: shopease
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: gp2   # AWS EKS default storage class
+  resources:
+    requests:
+      storage: 10Gi

@@ -1,0 +1,65 @@
+version: '3.9'
+
+services:
+
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: shopease-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       shopease
+      POSTGRES_USER:     shopuser
+      POSTGRES_PASSWORD: shoppass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shopuser -d shopease"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Spring Boot Backend ─────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/Dockerfile.backend
+    container_name: shopease-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL:      jdbc:postgresql://postgres:5432/shopease
+      SPRING_DATASOURCE_USERNAME: shopuser
+      SPRING_DATASOURCE_PASSWORD: shoppass
+      JWT_SECRET:                 ${JWT_SECRET:-404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+      JWT_EXPIRATION:             ${JWT_EXPIRATION:-86400000}
+      AWS_REGION:                 ${AWS_REGION:-us-east-1}
+      AWS_ACCESS_KEY:             ${AWS_ACCESS_KEY:-changeme}
+      AWS_SECRET_KEY:             ${AWS_SECRET_KEY:-changeme}
+      AWS_S3_BUCKET:              ${AWS_S3_BUCKET:-shopease-images}
+      APP_CORS_ALLOWED_ORIGINS:   http://localhost:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ── React Frontend ──────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/Dockerfile.frontend
+    container_name: shopease-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: shopease-network

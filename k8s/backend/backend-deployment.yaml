@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shopease-backend
+  namespace: shopease
+  labels:
+    app: shopease-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: shopease-backend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0        # Zero-downtime deploys
+  template:
+    metadata:
+      labels:
+        app: shopease-backend
+    spec:
+      containers:
+        - name: backend
+          image: YOUR_ECR_REGISTRY/shopease-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          # Pull non-sensitive config from ConfigMap
+          envFrom:
+            - configMapRef:
+                name: shopease-config
+          # Pull sensitive values from Secret
+          env:
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: shopease-secrets
+                  key: SPRING_DATASOURCE_URL
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: shopease-secrets
+                  key: SPRING_DATASOURCE_USERNAME
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: shopease-secrets
+                  key: SPRING_DATASOURCE_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: shopease-secrets
+                  key: JWT_SECRET
+            - name: AWS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: shopease-secrets
+                  key: AWS_ACCESS_KEY
+            - name: AWS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: shopease-secrets
+                  key: AWS_SECRET_KEY
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10

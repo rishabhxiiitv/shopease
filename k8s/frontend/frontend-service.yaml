@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: shopease-frontend
+  namespace: shopease
+  labels:
+    app: shopease-frontend
+spec:
+  selector:
+    app: shopease-frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  type: ClusterIP

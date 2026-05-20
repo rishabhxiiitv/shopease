@@ -1,0 +1,91 @@
+.product-list-page { padding: 2rem 0 4rem; }
+
+.pl-toolbar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.pl-search {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 240px;
+}
+.pl-search input {
+  flex: 1;
+  padding: 0.625rem 0.875rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  outline: none;
+  background: var(--surface);
+}
+.pl-search input:focus { border-color: var(--primary); }
+
+.pl-sort {
+  padding: 0.625rem 0.875rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+}
+
+.pl-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.pl-sidebar__title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.pl-categories { list-style: none; display: flex; flex-direction: column; gap: 0.25rem; }
+
+.pl-cat-btn {
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  border: none;
+  background: none;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  transition: all 0.15s;
+}
+.pl-cat-btn:hover { background: var(--bg); color: var(--text); }
+.pl-cat-btn.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+.pagination__info { font-size: 0.875rem; color: var(--text-muted); }
+
+@media (max-width: 720px) {
+  .pl-layout { grid-template-columns: 1fr; }
+  .pl-sidebar { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .pl-sidebar__title { width: 100%; }
+  .pl-categories { flex-direction: row; flex-wrap: wrap; }
+}

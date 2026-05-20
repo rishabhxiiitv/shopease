@@ -1,0 +1,23 @@
+.manage-products-page { padding: 2rem 0 4rem; }
+.mp-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 1.5rem; }
+.mp-list-title { font-size: 1.1rem; font-weight: 600; margin: 2rem 0 1rem; }
+
+.mp-form-card { padding: 1.75rem; margin-bottom: 2rem; }
+.mp-form { display: flex; flex-direction: column; gap: 1.1rem; }
+
+.mp-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+
+.mp-form-actions { display: flex; gap: 0.75rem; }
+
+.mp-row-actions { display: flex; gap: 0.5rem; }
+
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.data-table th {
+  text-align: left; padding: 0.6rem 0.75rem;
+  font-size: 0.75rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--text-muted); border-bottom: 1px solid var(--border);
+}
+.data-table td { padding: 0.75rem; border-bottom: 1px solid var(--border); }
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover td { background: var(--bg); }

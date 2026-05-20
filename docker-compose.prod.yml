@@ -1,0 +1,31 @@
+version: '3.9'
+
+# Production override — uses external AWS RDS, no local postgres
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+
+  postgres:
+    # Disable local postgres in production — use AWS RDS
+    profiles: ["disabled"]
+
+  backend:
+    image: ${ECR_REGISTRY}/shopease-backend:${IMAGE_TAG:-latest}
+    build: !reset null
+    environment:
+      SPRING_DATASOURCE_URL:      jdbc:postgresql://${RDS_HOST}:5432/${RDS_DB:-shopease}
+      SPRING_DATASOURCE_USERNAME: ${RDS_USER}
+      SPRING_DATASOURCE_PASSWORD: ${RDS_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_JPA_SHOW_SQL:          "false"
+      JWT_SECRET:                   ${JWT_SECRET}
+      AWS_REGION:                   ${AWS_REGION}
+      AWS_ACCESS_KEY:               ${AWS_ACCESS_KEY}
+      AWS_SECRET_KEY:               ${AWS_SECRET_KEY}
+      AWS_S3_BUCKET:                ${AWS_S3_BUCKET}
+      APP_CORS_ALLOWED_ORIGINS:     ${FRONTEND_URL}
+    depends_on: {}
+
+  frontend:
+    image: ${ECR_REGISTRY}/shopease-frontend:${IMAGE_TAG:-latest}
+    build: !reset null
